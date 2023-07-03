@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.microservices.springproductsservice.dtos.ProductRequest;
 import com.microservices.springproductsservice.models.Product;
@@ -37,11 +38,15 @@ public class ProductService {
         ResponseEntity<String> response = verifyToken.VerifyTokenResponse(bearerToken);
         String responseBody = response.getBody();
         HttpStatusCode responseStatusCode = response.getStatusCode();
+        MultipartFile picture = null;
 
         if (responseStatusCode == HttpStatus.OK && responseBody != null) {
 
             productRequest.setOwnerId(responseBody.replaceAll("\"", ""));
-            MultipartFile picture = productRequest.getPicture();
+
+            if (!productRequest.getPicture().isEmpty()) {
+                picture = productRequest.getPicture();
+            }
 
             Product new_product = Product.builder().name(productRequest.getName()).price(productRequest.getPrice())
                     .description(productRequest.getDescription()).ownerId(productRequest.getOwnerId())
@@ -91,4 +96,25 @@ public class ProductService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This user has no products yet");
     }
 
+    /* Delete product if authorized and owner */
+    public ResponseEntity<?> deleteProductById(UUID id, String bearerToken) {
+        Optional<Product> product = productRepository.findById(id);
+        ResponseEntity<String> response = verifyToken.VerifyTokenResponse(bearerToken);
+        if (product.isPresent() && response.getStatusCode() == HttpStatus.OK) {
+            String ownerOfProduct = product.get().getOwnerId();
+            String requestOwner = response.getBody().replace("\"", "");
+            if (requestOwner.equals(ownerOfProduct)) {
+                productRepository.deleteById(id);
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Product is deleted");
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authorized");
+            }
+        } else {
+            if (!product.isPresent()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product with this id not found: " + id);
+            }
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized: Invalid authorization header");
+
+        }
+    }
 }

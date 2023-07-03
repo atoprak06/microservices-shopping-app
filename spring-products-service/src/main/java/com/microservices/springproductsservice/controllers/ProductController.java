@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,8 +53,15 @@ public class ProductController {
 
     /* Get products by ownerId */
     @GetMapping(value = "owner/{id}")
-    public ResponseEntity<?> getProductsByOwner(@PathVariable String id) {
+    public ResponseEntity<?> getProductsByOwnerRoute(@PathVariable String id) {
         return productService.getProductsByOwner(id);
+    }
+
+    /* Delete product if authorized and owner */
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteProductRoute(@PathVariable UUID id,
+            @RequestHeader(value = "Authorization", required = true) String bearerToken) {
+        return productService.deleteProductById(id, bearerToken);
     }
 
 }

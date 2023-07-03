@@ -3,6 +3,6 @@ Shopping app using microservices architecture, currenlty user service and produc
 
 ###  User .env:
 Don't forget to create .env file for user service;
-`MONGO_URL = "mongodb://admin:password@mongo:27017/?retryWrites=true&w=majority"`, local container using mongodb
+`MONGO_URL = "mongodb://admin:password@mongo:27017/?retryWrites=true&w=majority"`(local container using mongodb) and
 `JWT_SECRET = "your jwt secret"`
 

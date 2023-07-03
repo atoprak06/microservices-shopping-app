@@ -45,7 +45,7 @@ public class UploadImage {
                 Path rootPath = Paths.get("");
                 String rootFolderPath = rootPath.toAbsolutePath().toString();
                 // Create the destination directory if it doesn't exist
-                String targetPath = rootFolderPath + "/spring-products-service/src/main/resources/static/uploads";
+                String targetPath = rootFolderPath + "/src/main/resources/static/uploads";
                 File directory = new File(
                         targetPath);
                 if (!directory.exists()) {

@@ -39,7 +39,7 @@ services:
     networks:
       - mongo
   mongo-express:
-    container_name: mongp-express
+    container_name: mongo-express
     image: mongo-express
     ports:
       - "5051:8081"
